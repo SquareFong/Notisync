@@ -1,0 +1,2 @@
+rootProject.name='NotiSync'
+include ':app'
