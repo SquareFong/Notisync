@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/type_manually"
+        android:title="Type Manually"/>
+    <item
+        android:id="@+id/import_from_clip_board"
+        android:title="Import From Clipboard"/>
+</menu>
