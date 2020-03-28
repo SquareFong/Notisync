@@ -18,4 +18,10 @@ public class MainActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.option, menu);
         return true;
     }
+
+    @Override
+    public boolean onCreatePanelMenu(int featureId, Menu menu) {
+        getMenuInflater().inflate(R.menu.option, menu);
+        return true;
+    }
 }
