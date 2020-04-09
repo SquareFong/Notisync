@@ -18,14 +18,14 @@ public class ConfigAdapter extends RecyclerView.Adapter<ConfigAdapter.ViewHolder
     static class ViewHolder extends RecyclerView.ViewHolder{
         TextView title;
         TextView address;
-        public ViewHolder(View view) {
+        ViewHolder(View view) {
             super(view);
             title = (TextView) view.findViewById(R.id.item_title);
             address = (TextView) view.findViewById(R.id.item_address);
         }
     }
 
-    public ConfigAdapter(List<Config> configList){
+    ConfigAdapter(List<Config> configList){
         mConfigList = configList;
     }
 
