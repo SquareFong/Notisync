@@ -41,9 +41,8 @@ public class ConfigAdapter extends RecyclerView.Adapter<ConfigAdapter.ViewHolder
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Config config = mConfigList.get(position);
-        //TODO holder.xxx.setxxx()
         holder.title.setText(config.mTitle);
-        holder.address.setText(config.mAdress);
+        holder.address.setText(config.mAddress);
     }
 
     @Override
