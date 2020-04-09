@@ -1,5 +1,6 @@
 package com.squarefong.notisync;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,12 +17,33 @@ public class ConfigAdapter extends RecyclerView.Adapter<ConfigAdapter.ViewHolder
 
     //和layout下的config_item.xml绑定
     static class ViewHolder extends RecyclerView.ViewHolder{
+        Integer number;
         TextView title;
         TextView address;
         ViewHolder(View view) {
             super(view);
             title = (TextView) view.findViewById(R.id.item_title);
             address = (TextView) view.findViewById(R.id.item_address);
+            view.findViewById(R.id.layout_edit).setOnClickListener(new MyClickListener());
+            view.findViewById(R.id.layout_share).setOnClickListener(new MyClickListener());
+            view.findViewById(R.id.layout_remove).setOnClickListener(new MyClickListener());
+        }
+        class MyClickListener implements View.OnClickListener{
+
+            @Override
+            public void onClick(View v) {
+                switch (v.getId()){
+                    case R.id.layout_edit:
+                        Log.d("MyClickListener", "onClick: " + number + " edit");
+                        break;
+                    case R.id.layout_share:
+                        Log.d("MyClickListener", "onClick: " + number + " share");
+                        break;
+                    case R.id.layout_remove:
+                        Log.d("MyClickListener", "onClick: " + number + " remove");
+                        break;
+                }
+            }
         }
     }
 
@@ -43,6 +65,7 @@ public class ConfigAdapter extends RecyclerView.Adapter<ConfigAdapter.ViewHolder
         Config config = mConfigList.get(position);
         holder.title.setText(config.mTitle);
         holder.address.setText(config.mAddress);
+        holder.number = config.mNumber;
     }
 
     @Override

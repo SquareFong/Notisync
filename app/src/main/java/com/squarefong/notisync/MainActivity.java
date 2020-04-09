@@ -29,11 +29,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initConfigs() {
-        Config a = new Config("123","Share 1");
+        Config a = new Config(1, "123","Share 1");
         configList.add(a);
-        Config b = new Config("234","Share 2");
+        Config b = new Config(2, "234","Share 2");
         configList.add(b);
-        Config c = new Config("345","Share 3");
+        Config c = new Config(3, "345","Share 3");
         configList.add(c);
     }
 
