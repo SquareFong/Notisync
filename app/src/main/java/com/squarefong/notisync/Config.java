@@ -2,9 +2,9 @@ package com.squarefong.notisync;
 
 class Config {
     String mTitle;
-    String mAdress;
+    String mAddress;
     Config(String title, String address){
         mTitle = title;
-        mAdress = address;
+        mAddress = address;
     }
 }
