@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class ConfigAdapter extends RecyclerView.Adapter<ConfigAdapter.ViewHolder> {
 
-    private List<Config> mConfigList;
+    private List<ConfigItem> mConfigList;
 
     //和layout下的config_item.xml绑定
     static class ViewHolder extends RecyclerView.ViewHolder{
@@ -47,7 +47,7 @@ public class ConfigAdapter extends RecyclerView.Adapter<ConfigAdapter.ViewHolder
         }
     }
 
-    ConfigAdapter(List<Config> configList){
+    ConfigAdapter(List<ConfigItem> configList){
         mConfigList = configList;
     }
 
@@ -62,7 +62,7 @@ public class ConfigAdapter extends RecyclerView.Adapter<ConfigAdapter.ViewHolder
     //把单个Config类里面的内容，通过Holder设置到界面
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Config config = mConfigList.get(position);
+        ConfigItem config = mConfigList.get(position);
         holder.title.setText(config.mTitle);
         holder.address.setText(config.mAddress);
         holder.number = config.mNumber;

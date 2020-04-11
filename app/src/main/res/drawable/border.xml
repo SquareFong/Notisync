@@ -2,7 +2,7 @@
     <!-- 连框颜色值 -->
     <item>
         <shape>
-            <solid android:color="#cccccc" />
+            <solid android:color="#dddddd" />
             <corners
                 android:radius="10dp" />
         </shape>
@@ -14,9 +14,9 @@
         android:start="1dp"
         android:end="1dp"> <!--设置只有底部有边框-->
         <shape>
-            <solid android:color="#00ffffff" />
+            <solid android:color="#ffffff" />
             <corners
-                android:radius="10dp" />
+                android:radius="9dp" />
 
         </shape>
     </item>

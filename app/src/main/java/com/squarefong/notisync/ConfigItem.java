@@ -1,10 +1,10 @@
 package com.squarefong.notisync;
 
-class Config {
+class ConfigItem {
     Integer mNumber;
     String mTitle;
     String mAddress;
-    Config(Integer number, String title, String address){
+    ConfigItem(Integer number, String title, String address){
         mNumber = number;
         mTitle = title;
         mAddress = address;
