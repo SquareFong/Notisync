@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
     public boolean onOptionsItemSelected(MenuItem item){
         switch (item.getItemId()){
+            //手动输入配置
             case R.id.type_manually:
                 Intent intent = new Intent(MainActivity.this, ConfigFileActivity.class);
                 startActivity(intent);
