@@ -7,9 +7,12 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static androidx.constraintlayout.widget.Constraints.TAG;
 
 class ConfigsHelper extends SQLiteOpenHelper {
     public static final int DATABASE_VERSION = 1;
@@ -42,21 +45,21 @@ class ConfigsHelper extends SQLiteOpenHelper {
 }
 
 public class ConfigsManager {
-
-    private SQLiteDatabase db;
+    private ConfigsHelper helper;
     ConfigsManager(Context context){
-        ConfigsHelper helper = new ConfigsHelper(context);
-        db = helper.getWritableDatabase();
+        helper = new ConfigsHelper(context);
     }
 
     private List<ConfigItem> configList=new ArrayList<>();
 
-    public List<ConfigItem> getConfigList() {
+    List<ConfigItem> getConfigList() {
         if(configList.size() == 0){
             String QUERY = "SELECT * FROM " + ConfigsHelper.TABLE_NAME;
             String[] selectionArgs = { "id", "isRun", "remarks",
                     "address", "ports", "uuid", "mode" };
-            @SuppressLint("Recycle") Cursor cursor = db.rawQuery(QUERY, selectionArgs);
+            SQLiteDatabase db = helper.getWritableDatabase();
+            Cursor cursor = db.query(ConfigsHelper.TABLE_NAME, null, null,
+                    null, null ,null, "id");
             if(cursor.getCount() > 0) {
                 while (cursor.moveToNext()) {
                     ConfigItem item = new ConfigItem(
@@ -70,11 +73,13 @@ public class ConfigsManager {
                     configList.add(item);
                 }
             }
+            cursor.close();
         }
         return configList;
     }
 
     public void insert(ConfigItem item){
+        SQLiteDatabase db = helper.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("isRun", item.isRun);
         values.put("remarks", item.remarks);
@@ -82,6 +87,31 @@ public class ConfigsManager {
         values.put("ports", item.ports);
         values.put("uuid", item.uuid);
         values.put("mode", item.mode.getCode());
-        db.insert(ConfigsHelper.TABLE_NAME, null, values);
+        long result = db.insert(ConfigsHelper.TABLE_NAME, null, values);
+        if(result < 0) {
+            Log.d(TAG, "update: db.insert occurred an error");
+        }
+    }
+
+    public void delete(ConfigItem item){
+        SQLiteDatabase db = helper.getWritableDatabase();
+        String[] args = {item.number.toString()};
+        db.delete(ConfigsHelper.TABLE_NAME, "id", args);
+    }
+
+    public void update(ConfigItem item){
+        SQLiteDatabase db = helper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("id", item.number);
+        values.put("isRun", item.isRun);
+        values.put("remarks", item.remarks);
+        values.put("address", item.address);
+        values.put("ports", item.ports);
+        values.put("uuid", item.uuid);
+        values.put("mode", item.mode.getCode());
+        long result = db.replace(ConfigsHelper.TABLE_NAME, null, values);
+        if(result < 0) {
+            Log.d(TAG, "update: db.replace occurred an error");
+        }
     }
 }
