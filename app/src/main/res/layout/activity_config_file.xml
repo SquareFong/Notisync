@@ -27,7 +27,7 @@
                 android:id="@+id/sc_run"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:inputType="text" />
+                />
 
         </LinearLayout>
 

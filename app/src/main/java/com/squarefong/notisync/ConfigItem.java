@@ -1,7 +1,7 @@
 package com.squarefong.notisync;
 
 enum WorkingMode {
-    Receiver("Receiver", 1), Sender("Sender", 2);
+    Receiver("Receiver", 0), Sender("Sender", 1);
 
     private final String name;
     private final Integer code;
@@ -22,7 +22,7 @@ enum WorkingMode {
 
 class ConfigItem {
     Integer number;
-    Integer isRun;
+    Integer isRun;//1运行 0不运行
     String remarks;
     String address;
     Integer ports;
@@ -32,6 +32,7 @@ class ConfigItem {
         this.number = number;
         this.remarks = remarks;
         this.address = address;
+        this.isRun = 0;
     }
 
     ConfigItem(Integer number, Integer isRun, String remarks,

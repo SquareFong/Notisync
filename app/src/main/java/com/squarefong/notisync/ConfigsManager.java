@@ -1,7 +1,5 @@
 package com.squarefong.notisync;
 
-import android.annotation.SuppressLint;
-import android.app.DownloadManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -45,12 +43,22 @@ class ConfigsHelper extends SQLiteOpenHelper {
 }
 
 public class ConfigsManager {
-    private ConfigsHelper helper;
+    private static ConfigsHelper helper;
     ConfigsManager(Context context){
         helper = new ConfigsHelper(context);
     }
 
-    private List<ConfigItem> configList=new ArrayList<>();
+    private static List<ConfigItem> configList=new ArrayList<>();
+
+    static ConfigItem getConfigItemByID(Integer number){
+        for (ConfigItem item : configList) {
+            if (item.number.equals(number)) {
+                return item;
+            }
+        }
+        Log.d(TAG, "getConfigItemByID: 根据ID查找失败");
+        return (ConfigItem)configList.iterator();
+    }
 
     List<ConfigItem> getConfigList() {
         if(configList.size() == 0){
@@ -87,16 +95,23 @@ public class ConfigsManager {
         values.put("ports", item.ports);
         values.put("uuid", item.uuid);
         values.put("mode", item.mode.getCode());
-        long result = db.insert(ConfigsHelper.TABLE_NAME, null, values);
+        //result 即为rowID
+        Long result = db.insert(ConfigsHelper.TABLE_NAME, null, values);
         if(result < 0) {
             Log.d(TAG, "update: db.insert occurred an error");
+        }
+        if(item.number == -1){
+            //从数据库更新item的ID然后插入configList
+            item.number = result.intValue();
+            configList.add(item);
         }
     }
 
     public void delete(ConfigItem item){
         SQLiteDatabase db = helper.getWritableDatabase();
         String[] args = {item.number.toString()};
-        db.delete(ConfigsHelper.TABLE_NAME, "id", args);
+        db.delete(ConfigsHelper.TABLE_NAME, "id=?", args);
+        configList.remove(item);
     }
 
     public void update(ConfigItem item){

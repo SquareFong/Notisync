@@ -23,6 +23,9 @@
             android:layout_height="wrap_content"
             android:textColor="#000000"
             android:fontFamily="sans-serif-black"
+            android:textSize="18dp"
+            android:maxWidth="250dp"
+            android:maxHeight="45dp"
             />
         <TextView
             android:id="@+id/item_address"
@@ -31,6 +34,9 @@
             android:layout_marginTop="5dp"
             android:textColor="#aaaaaa"
             android:fontFamily="sans-serif-medium"
+            android:textSize="16dp"
+            android:maxWidth="250dp"
+            android:maxHeight="38dp"
             />
     </LinearLayout>
 
