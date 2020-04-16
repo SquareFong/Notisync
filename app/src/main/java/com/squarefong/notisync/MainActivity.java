@@ -22,17 +22,26 @@ public class MainActivity extends AppCompatActivity {
     private List<ConfigItem> configList;
 
     public ConfigsManager configsManager = new ConfigsManager(this);
+    public static NotificationListener listener = new NotificationListener();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //打开通知监听服务
+        listener.attachBaseContext(this);
+        Intent intent = new Intent(MainActivity.this, NotificationListener.class);
+        startService(intent);
+
+        //初始化主界面 和 recyclerView
         initConfigs();
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         ConfigAdapter adapter = new ConfigAdapter(this, configList);
         recyclerView.setAdapter(adapter);
+
+        //注册广播接收器以更新界面
         IntentFilter filter = new IntentFilter(ConfigFileActivity.action);
         registerReceiver(broadcastReceiver, filter);
 
@@ -69,6 +78,10 @@ public class MainActivity extends AppCompatActivity {
             case R.id.import_from_clip_board:
                 Toast.makeText(MainActivity.this, "You Click Import",
                         Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.notification_setting:
+                listener.applyAccessSetting();
+                break;
         }
         return true;
     }
