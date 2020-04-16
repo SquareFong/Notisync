@@ -9,4 +9,7 @@
     <item
         android:id="@+id/notification_setting"
         android:title="Notification Permission Setting"/>
+    <item
+        android:id="@+id/caught_notifications"
+        android:title="Notifications"/>
 </menu>

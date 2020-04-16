@@ -23,15 +23,12 @@ public class MainActivity extends AppCompatActivity {
 
     public ConfigsManager configsManager = new ConfigsManager(this);
     public static NotificationListener listener = new NotificationListener();
+
+    static Boolean isFirst = true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        //打开通知监听服务
-        listener.attachBaseContext(this);
-        Intent intent = new Intent(MainActivity.this, NotificationListener.class);
-        startService(intent);
 
         //初始化主界面 和 recyclerView
         initConfigs();
@@ -41,10 +38,18 @@ public class MainActivity extends AppCompatActivity {
         ConfigAdapter adapter = new ConfigAdapter(this, configList);
         recyclerView.setAdapter(adapter);
 
-        //注册广播接收器以更新界面
-        IntentFilter filter = new IntentFilter(ConfigFileActivity.action);
-        registerReceiver(broadcastReceiver, filter);
+        if(isFirst) {
+            //打开通知监听服务
+            listener.attachBaseContext(this);
+            Intent intent = new Intent(MainActivity.this, NotificationListener.class);
+            startService(intent);
 
+            //注册广播接收器以更新界面
+            IntentFilter filter = new IntentFilter(ConfigFileActivity.action);
+            registerReceiver(broadcastReceiver, filter);
+
+            isFirst = false;
+        }
     }
 
     private void initConfigs() {
@@ -66,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    //菜单选中
     public boolean onOptionsItemSelected(MenuItem item){
         switch (item.getItemId()){
             //启动Activity，手动输入配置
@@ -82,6 +88,11 @@ public class MainActivity extends AppCompatActivity {
             case R.id.notification_setting:
                 listener.applyAccessSetting();
                 break;
+            case R.id.caught_notifications:
+                Intent intent0 = new Intent(MainActivity.this,
+                        NotificationsActivity.class);
+                startActivity(intent0);
+                break;
         }
         return true;
     }
@@ -95,7 +106,6 @@ public class MainActivity extends AppCompatActivity {
     BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            // TODO Auto-generated method stub;
             unregisterReceiver(this);
             recreate();
         }

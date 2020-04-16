@@ -28,7 +28,13 @@ public class NotificationListener extends NotificationListenerService {
         String pkgName = sbn.getPackageName();
         String title = notification.extras.getString(Notification.EXTRA_TITLE);
         String content = notification.extras.getString(Notification.EXTRA_TEXT);
+        NotificationManager.add(pkgName,title,content);
         Log.d(TAG, pkgName + " : " + title + content);
+
+        Log.d(TAG, "当前通知数量：" + NotificationManager.notifications.size());
+//发送广播以更新主界面
+        Intent intent = new Intent(NotificationsActivity.action);
+        sendBroadcast(intent);
     }
 
     private boolean gotoNotificationAccessSetting(Context context) {
