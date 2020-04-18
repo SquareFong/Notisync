@@ -22,9 +22,11 @@ class NotificationItem {
     String packageName;
     String title;
     String content;
+    Long time;
     NotificationItem(String packageName, String title, String content){
         this.packageName = packageName;
         this.title = title;
         this.content = content;
+        this.time = System.currentTimeMillis() / 1000;
     }
 }
