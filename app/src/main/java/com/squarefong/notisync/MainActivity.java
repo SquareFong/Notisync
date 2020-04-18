@@ -9,10 +9,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.util.JsonReader;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.List;
 
@@ -49,6 +53,29 @@ public class MainActivity extends AppCompatActivity {
             registerReceiver(broadcastReceiver, filter);
 
             isFirst = false;
+        }
+
+
+        //TODO test 测试JSON用，记得注释掉
+        try {
+            JSONObject ojb = NetworkUtil.notificationToJson(
+                    "7517e18a-40a6-4902-a7c9-23bd0ef7f00f",
+                    new NotificationItem("com.v2ray.ang",
+                            "ggc-hk",
+                            "这是一条测试信息abc"));
+            NetworkUtil.sendPOSTRequest("192.168.50.151", 9090, ojb, new HttpCallbackListener() {
+                @Override
+                public void onFinish(String response) {
+                    Log.d(TAG, "onFinish: " + response);
+                }
+
+                @Override
+                public void onError(Exception e) {
+
+                }
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 
