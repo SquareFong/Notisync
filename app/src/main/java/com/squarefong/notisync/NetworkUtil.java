@@ -70,14 +70,6 @@ public class NetworkUtil {
                                 new InputStreamReader(conn.getInputStream()));
                         result = reader.readLine();
                     }
-//
-//                    InputStream in = conn.getInputStream();
-//                    BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-//                    StringBuilder response = new StringBuilder();
-//                    String line;
-//                    while ((line = reader.readLine()) != null) {
-//                        response.append(line);
-//                    }
 
                     if (listener != null) {
                         //回调onfinish方法
@@ -95,6 +87,37 @@ public class NetworkUtil {
             }
         }).start();
     }
+
+    public static void sendNotification(NotificationItem item){
+        //遍历配置列表，选择所有发送的配置执行
+        for (ConfigItem cfg:ConfigsManager.configList) {
+            if (cfg.isRun > 0 && cfg.mode.equals(WorkingMode.Sender)) {
+                try {
+                    JSONObject ojb = NetworkUtil.notificationToJson(
+                            cfg.uuid,
+                            item);
+                    NetworkUtil.sendPOSTRequest(cfg.address,
+                            Integer.parseInt(cfg.address),
+                            ojb,
+                            new HttpCallbackListener() {
+                        @Override
+                        public void onFinish(String response) {
+                            Log.d(TAG, "NetworkUtil:sendNotification: onFinish: " + response);
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+
+                        }
+                    });
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+
 
     public static void sendGETRequest(final String address, final String method, final
         HttpCallbackListener listener) {

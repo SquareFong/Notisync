@@ -13,7 +13,11 @@ public class NotificationManager {
         notifications.add(new NotificationItem(packageName,title,content));
     }
 
-    public static List<NotificationItem> getNotifications() {
+    public static void add(NotificationItem item) {
+        notifications.add(item);
+    }
+
+        public static List<NotificationItem> getNotifications() {
         return notifications;
     }
 }

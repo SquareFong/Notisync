@@ -48,7 +48,7 @@ public class ConfigsManager {
         helper = new ConfigsHelper(context);
     }
 
-    private static List<ConfigItem> configList=new ArrayList<>();
+    static List<ConfigItem> configList=new ArrayList<>();
 
     static ConfigItem getConfigItemByID(Integer number){
         for (ConfigItem item : configList) {

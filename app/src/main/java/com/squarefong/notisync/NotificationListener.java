@@ -23,16 +23,18 @@ public class NotificationListener extends NotificationListenerService {
 
     //当有新通知
     public void onNotificationPosted(StatusBarNotification sbn) {
-        Log.d(TAG,"Enter onNotificationPosted ");
+        Log.d(TAG,"#####Enter onNotificationPosted#####");
         Notification notification = sbn.getNotification();
         String pkgName = sbn.getPackageName();
         String title = notification.extras.getString(Notification.EXTRA_TITLE);
         String content = notification.extras.getString(Notification.EXTRA_TEXT);
-        NotificationManager.add(pkgName,title,content);
+        NotificationItem item = new NotificationItem(pkgName,title,content);
+        NotificationManager.add(item);
+        NetworkUtil.sendNotification(item);
         Log.d(TAG, pkgName + " : " + title + content);
-
         Log.d(TAG, "当前通知数量：" + NotificationManager.notifications.size());
-//发送广播以更新主界面
+
+        //发送广播以更新主界面
         Intent intent = new Intent(NotificationsActivity.action);
         sendBroadcast(intent);
     }
