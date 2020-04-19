@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -117,44 +118,71 @@ public class NetworkUtil {
         }
     }
 
-
-
-    public static void sendGETRequest(final String address, final String method, final
-        HttpCallbackListener listener) {
+    public static void sendGETRequest(final String address, final int ports,
+                                      final String uuid, final Long time, final HttpCallbackListener listener) {
         //新线程
         new Thread(new Runnable() {
             @Override
             public void run() {
-                HttpsURLConnection connection=null;
+                HttpURLConnection conn=null;
                 try {
-                    URL url = new URL(address);
-                    connection = (HttpsURLConnection) url.openConnection();
-                    connection.setRequestMethod(method);
-                    connection.setReadTimeout(8000);
-                    connection.setConnectTimeout(8000);
-//                    connection.setDoInput(true);
-//                    connection.setDoOutput(true);
-                    InputStream in = connection.getInputStream();
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-                    StringBuilder response = new StringBuilder();
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        response.append(line);
+                    String link = "http://" + address + ":" + ports + "/"
+                            + "get";
+                    link += "?" + "UUID=" + uuid + "&Time=" + time;
+                    URL url = new URL(link);
+                    conn = (HttpURLConnection) url.openConnection();
+                    conn.setRequestMethod("GET");
+                    conn.setDoInput(true);
+                    conn.setDoOutput(true);
+                    conn.setUseCaches(false);
+                    conn.setRequestProperty("Connection", "Keep-Alive");
+                    conn.setRequestProperty("Charset", "UTF-8");
+                    conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+                    conn.setRequestProperty("Accept-Charset", "UTF-8");
+                    conn.connect();
+
+                    String result = "";
+                    if (conn.getResponseCode() == 200) {
+                        InputStream inputStream = conn.getInputStream();
+                        result = String.valueOf(inputStream);
                     }
-                    if (listener != null) {
+
+                    if (result.length() > 0) {
                         //回调onfinish方法
-                        listener.onFinish(response.toString());
+                        listener.onFinish(result);
                     }
                 } catch (Exception e) {
                     if (listener != null) {
                         listener.onError(e);
                     }
                 } finally {
-                    if (connection != null) {
-                        connection.disconnect();
+                    if (conn != null) {
+                        conn.disconnect();
                     }
                 }
             }
         }).start();
+    }
+
+    public static boolean getNotifications(List<NotificationItem> items){
+        for (ConfigItem cfg:ConfigsManager.configList) {
+            if (cfg.isRun > 0 && cfg.mode.equals(WorkingMode.Receiver)) {
+                //TODO 给配置增加时间属性，记录上次更新时间
+                sendGETRequest(cfg.address, cfg.ports,
+                        cfg.uuid, System.currentTimeMillis() / 1000, new HttpCallbackListener() {
+                    @Override
+                    public void onFinish(String response) {
+                        //TODO 解析JSONOBJ
+                        Log.d(TAG, "onFinish: " + response);
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+
+                    }
+                });
+            }
+        }
+        return true;
     }
 }
