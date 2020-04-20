@@ -1,5 +1,6 @@
 package com.squarefong.notisync;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -45,8 +46,13 @@ class ConfigsHelper extends SQLiteOpenHelper {
 
 public class ConfigsManager {
     private static ConfigsHelper helper;
+    @SuppressLint("StaticFieldLeak")
+    public static Context context = null;
     ConfigsManager(Context context){
-        helper = new ConfigsHelper(context);
+        if(ConfigsManager.context == null){
+            ConfigsManager.context = context;
+        }
+        helper = new ConfigsHelper(ConfigsManager.context);
     }
 
     static List<ConfigItem> configList=new ArrayList<>();

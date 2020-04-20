@@ -1,5 +1,6 @@
 package com.squarefong.notisync;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -20,6 +21,8 @@ import java.util.List;
 import static android.content.ContentValues.TAG;
 
 public class NetworkUtil {
+    public static Context context;
+
     public static JSONObject notificationToJson(String uuid, NotificationItem n) throws JSONException {
         JSONObject json = new JSONObject();
         json.put("UUID", uuid);
@@ -184,13 +187,13 @@ public class NetworkUtil {
     }
 
     public static void getNotifications(){
-        for (ConfigItem cfg:ConfigsManager.configList) {
+        for (final ConfigItem cfg:ConfigsManager.configList) {
             if (cfg.isRun > 0 && cfg.mode.equals(WorkingMode.Receiver)) {
                 sendGETRequest(cfg.address, cfg.ports,
                         cfg.uuid, cfg.lastUpdate.longValue(), new HttpCallbackListener() {
                     @Override
                     public void onFinish(String response) {
-                        //TODO 解析JSONOBJ
+                        //TODO 更新最新通知时间
                         Log.d(TAG, "onFinish: " + response);
                         Gson gson = new Gson();
                         List<Item> notificationItemList= gson.fromJson(response,
@@ -201,6 +204,13 @@ public class NetworkUtil {
                             Log.d(TAG, "onFinish: GotNotification: title:" + item.Title);
                             Log.d(TAG, "onFinish: GotNotification: content:" + item.Content);
                             FetchNotiService.postNotification(item.Title, item.Content);
+                            if (item.Time.compareTo(cfg.lastUpdate.longValue()) > 0){
+                                cfg.lastUpdate = item.Time.intValue();
+                                //以后考虑更优雅方式
+                                ConfigsManager configsManager = new ConfigsManager(ConfigsManager.context);
+                                configsManager.update(cfg);
+                                Log.d(TAG, "onFinish: 更新最新时间" + cfg.lastUpdate);
+                            }
                         }
                     }
 
