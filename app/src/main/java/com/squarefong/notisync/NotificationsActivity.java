@@ -4,9 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,7 +23,7 @@ public class NotificationsActivity extends AppCompatActivity {
         RecyclerView recyclerView = findViewById(R.id.rv_notifications);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
-        adapter = new NotificationAdapter(NotificationManager.notifications);
+        adapter = new NotificationAdapter(NotificationsManager.notifications);
         adapter.parentContext = this;
         recyclerView.setAdapter(adapter);
         Log.d(TAG, "进入 onCreate");

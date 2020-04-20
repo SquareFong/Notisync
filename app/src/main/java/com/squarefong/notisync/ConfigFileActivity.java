@@ -56,7 +56,6 @@ public class ConfigFileActivity extends AppCompatActivity
             item.isRun=0;
         }
         else {
-            //TODO 获取id并获取Item，然后初始化页面
             Integer number = intent.getIntExtra("id", -1);
             item = ConfigsManager.getConfigItemByID(number);
             mSwitch.setChecked(item.isRun > 0);

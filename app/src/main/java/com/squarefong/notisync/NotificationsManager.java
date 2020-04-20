@@ -3,9 +3,9 @@ package com.squarefong.notisync;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NotificationManager {
+public class NotificationsManager {
     public static List<NotificationItem> notifications = new ArrayList<>();
-    NotificationManager(){
+    NotificationsManager(){
         //TODO 考虑做持久化
     }
 

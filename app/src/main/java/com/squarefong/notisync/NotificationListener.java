@@ -1,6 +1,5 @@
 package com.squarefong.notisync;
 
-import android.app.Activity;
 import android.app.Notification;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
@@ -29,10 +28,10 @@ public class NotificationListener extends NotificationListenerService {
         String title = notification.extras.getString(Notification.EXTRA_TITLE);
         String content = notification.extras.getString(Notification.EXTRA_TEXT);
         NotificationItem item = new NotificationItem(pkgName,title,content);
-        NotificationManager.add(item);
+        NotificationsManager.add(item);
         NetworkUtil.sendNotification(item);
         Log.d(TAG, pkgName + " : " + title + content);
-        Log.d(TAG, "当前通知数量：" + NotificationManager.notifications.size());
+        Log.d(TAG, "当前通知数量：" + NotificationsManager.notifications.size());
 
         //发送广播以更新主界面
         Intent intent = new Intent(NotificationsActivity.action);
