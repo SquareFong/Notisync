@@ -32,7 +32,8 @@ class ConfigsHelper extends SQLiteOpenHelper {
                 "address TEXT, " +
                 "ports INTEGER, " +
                 "uuid TEXT, " +
-                "mode INTEGER" + ")";
+                "mode INTEGER," +
+                "lastUpdate INTEGER" + ")";
         db.execSQL(CREATE_TABLE);
     }
 
@@ -64,7 +65,7 @@ public class ConfigsManager {
         if(configList.size() == 0){
             String QUERY = "SELECT * FROM " + ConfigsHelper.TABLE_NAME;
             String[] selectionArgs = { "id", "isRun", "remarks",
-                    "address", "ports", "uuid", "mode" };
+                    "address", "ports", "uuid", "mode", "lastUpdate"};
             SQLiteDatabase db = helper.getWritableDatabase();
             Cursor cursor = db.query(ConfigsHelper.TABLE_NAME, null, null,
                     null, null ,null, "id");
@@ -77,7 +78,8 @@ public class ConfigsManager {
                             cursor.getString(3),
                             cursor.getInt(4),
                             cursor.getString(5),
-                            cursor.getInt(6));
+                            cursor.getInt(6),
+                            cursor.getInt(7));
                     configList.add(item);
                 }
             }
@@ -95,6 +97,7 @@ public class ConfigsManager {
         values.put("ports", item.ports);
         values.put("uuid", item.uuid);
         values.put("mode", item.mode.getCode());
+        values.put("lastUpdate", item.lastUpdate);
         //result 即为rowID
         Long result = db.insert(ConfigsHelper.TABLE_NAME, null, values);
         if(result < 0) {
@@ -124,6 +127,7 @@ public class ConfigsManager {
         values.put("ports", item.ports);
         values.put("uuid", item.uuid);
         values.put("mode", item.mode.getCode());
+        values.put("lastUpdate", item.lastUpdate);
         long result = db.replace(ConfigsHelper.TABLE_NAME, null, values);
         if(result < 0) {
             Log.d(TAG, "update: db.replace occurred an error");

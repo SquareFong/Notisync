@@ -28,16 +28,18 @@ class ConfigItem {
     Integer ports;
     String uuid;
     WorkingMode mode;
+    Integer lastUpdate;
     ConfigItem(Integer number, String remarks, String address){
         this.number = number;
         this.remarks = remarks;
         this.address = address;
         this.isRun = 0;
+        lastUpdate = 0;
     }
 
     ConfigItem(Integer number, Integer isRun, String remarks,
                String address, Integer ports, String uuid,
-               Integer mode) {
+               Integer mode, Integer lastUpdate) {
         this.number = number;
         this.isRun = isRun;
         this.remarks = remarks;
@@ -45,5 +47,6 @@ class ConfigItem {
         this.ports = ports;
         this.uuid = uuid;
         this.mode = (mode==0? WorkingMode.Receiver:WorkingMode.Sender);
+        this.lastUpdate = lastUpdate;
     }
 }
