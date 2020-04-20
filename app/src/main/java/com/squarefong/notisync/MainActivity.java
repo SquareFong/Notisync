@@ -50,10 +50,13 @@ public class MainActivity extends AppCompatActivity {
 
             isFirst = false;
         }
-            //注册广播接收器以更新界面
+
+        //注册广播接收器以更新界面
         IntentFilter filter = new IntentFilter(ConfigFileActivity.action);
         registerReceiver(broadcastReceiver, filter);
 
+        Intent i = new Intent(this, FetchNotiService.class);
+        startService(i);
 
 
         //TODO test 测试JSON用，记得注释掉
@@ -81,12 +84,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void initConfigs() {
         configList = configsManager.getConfigList();
+        //TODO 测试用 最后删掉
         if (configList.size() == 0 ){
             ConfigItem item = new ConfigItem(
-                    -1, 0,
+                    -1, 1,
                     "Untitled Configuration",
-                    "127.0.0.1", 23445,"000-000",
-                    WorkingMode.Receiver.getCode());
+                    "192.168.50.151", 9090,"000-000",
+                    WorkingMode.Sender.getCode(),0);
             configsManager.insert(item);
         }
     }
