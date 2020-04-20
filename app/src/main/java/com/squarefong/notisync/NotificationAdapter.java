@@ -32,7 +32,6 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            //parentContext.unregisterReceiver(this);
             updateView();
         }
     };

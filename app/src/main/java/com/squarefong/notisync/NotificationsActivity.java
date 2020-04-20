@@ -31,17 +31,14 @@ public class NotificationsActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
         Log.d(TAG, "进入 onCreate");
 
-        if(isFirst) {
-            //注册广播接收器以更新界面
-            IntentFilter filter = new IntentFilter(NotificationsActivity.action);
-            registerReceiver(adapter.broadcastReceiver, filter);
-            isFirst = false;
-        }
+        //注册广播接收器以更新界面
+        IntentFilter filter = new IntentFilter(NotificationsActivity.action);
+        registerReceiver(adapter.broadcastReceiver, filter);
     }
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         unregisterReceiver(adapter.broadcastReceiver);
+        super.onDestroy();
     }
 }
