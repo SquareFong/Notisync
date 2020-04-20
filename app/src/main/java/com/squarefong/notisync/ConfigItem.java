@@ -44,6 +44,6 @@ class ConfigItem {
         this.address = address;
         this.ports = ports;
         this.uuid = uuid;
-        this.mode = (mode==1? WorkingMode.Receiver:WorkingMode.Sender);
+        this.mode = (mode==0? WorkingMode.Receiver:WorkingMode.Sender);
     }
 }
