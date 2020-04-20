@@ -91,7 +91,7 @@ public class ConfigAdapter extends RecyclerView.Adapter<ConfigAdapter.ViewHolder
             }
         });
 
-        holder.layout_remove.setOnClickListener(new View.OnClickListener() {
+        holder.layout_share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d("MyClickListener", "onClick: " + holder.number + " share");
