@@ -48,12 +48,12 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, NotificationListener.class);
             startService(intent);
 
-            //注册广播接收器以更新界面
-            IntentFilter filter = new IntentFilter(ConfigFileActivity.action);
-            registerReceiver(broadcastReceiver, filter);
-
             isFirst = false;
         }
+            //注册广播接收器以更新界面
+        IntentFilter filter = new IntentFilter(ConfigFileActivity.action);
+        registerReceiver(broadcastReceiver, filter);
+
 
 
         //TODO test 测试JSON用，记得注释掉
@@ -137,4 +137,10 @@ public class MainActivity extends AppCompatActivity {
             recreate();
         }
     };
+
+    @Override
+    protected void onDestroy() {
+        unregisterReceiver(this.broadcastReceiver);
+        super.onDestroy();
+    }
 }

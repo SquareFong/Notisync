@@ -98,7 +98,7 @@ public class NetworkUtil {
                             cfg.uuid,
                             item);
                     NetworkUtil.sendPOSTRequest(cfg.address,
-                            Integer.parseInt(cfg.address),
+                            cfg.ports,
                             ojb,
                             new HttpCallbackListener() {
                         @Override
