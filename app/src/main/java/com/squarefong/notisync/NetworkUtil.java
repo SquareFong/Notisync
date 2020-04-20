@@ -2,6 +2,9 @@ package com.squarefong.notisync;
 
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,8 +16,6 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
-
-import javax.net.ssl.HttpsURLConnection;
 
 import static android.content.ContentValues.TAG;
 
@@ -89,33 +90,38 @@ public class NetworkUtil {
         }).start();
     }
 
-    public static void sendNotification(NotificationItem item){
+    public static void sendNotification(final NotificationItem item){
         //遍历配置列表，选择所有发送的配置执行
-        for (ConfigItem cfg:ConfigsManager.configList) {
-            if (cfg.isRun > 0 && cfg.mode.equals(WorkingMode.Sender)) {
-                try {
-                    JSONObject ojb = NetworkUtil.notificationToJson(
-                            cfg.uuid,
-                            item);
-                    NetworkUtil.sendPOSTRequest(cfg.address,
-                            cfg.ports,
-                            ojb,
-                            new HttpCallbackListener() {
-                        @Override
-                        public void onFinish(String response) {
-                            Log.d(TAG, "NetworkUtil:sendNotification: onFinish: " + response);
-                        }
+        new Thread(new Runnable(){
+            @Override
+            public void run() {
+                for (ConfigItem cfg:ConfigsManager.configList) {
+                    if (cfg.isRun > 0 && cfg.mode.equals(WorkingMode.Sender)) {
+                        try {
+                            JSONObject ojb = NetworkUtil.notificationToJson(
+                                    cfg.uuid,
+                                    item);
+                            NetworkUtil.sendPOSTRequest(cfg.address,
+                                    cfg.ports,
+                                    ojb,
+                                    new HttpCallbackListener() {
+                                        @Override
+                                        public void onFinish(String response) {
+                                            Log.d(TAG, "NetworkUtil:sendNotification: onFinish: " + response);
+                                        }
 
-                        @Override
-                        public void onError(Exception e) {
+                                        @Override
+                                        public void onError(Exception e) {
 
+                                        }
+                                    });
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
-                    });
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                    }
                 }
             }
-        }
+        }).start();
     }
 
     public static void sendGETRequest(final String address, final int ports,
@@ -124,7 +130,7 @@ public class NetworkUtil {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                HttpURLConnection conn=null;
+                HttpURLConnection conn = null;
                 try {
                     String link = "http://" + address + ":" + ports + "/"
                             + "get";
@@ -133,9 +139,7 @@ public class NetworkUtil {
                     conn = (HttpURLConnection) url.openConnection();
                     conn.setRequestMethod("GET");
                     conn.setDoInput(true);
-                    conn.setDoOutput(true);
                     conn.setUseCaches(false);
-                    conn.setRequestProperty("Connection", "Keep-Alive");
                     conn.setRequestProperty("Charset", "UTF-8");
                     conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
                     conn.setRequestProperty("Accept-Charset", "UTF-8");
@@ -144,7 +148,15 @@ public class NetworkUtil {
                     String result = "";
                     if (conn.getResponseCode() == 200) {
                         InputStream inputStream = conn.getInputStream();
-                        result = String.valueOf(inputStream);
+                        InputStreamReader inputStreamReader = new
+                                InputStreamReader(inputStream,"utf-8");
+                        BufferedReader reader = new BufferedReader(inputStreamReader);
+                        StringBuilder content = new StringBuilder();
+                        String line;
+                        while ((line = reader.readLine()) != null){
+                            content.append(line);
+                        }
+                        result = content.toString();
                     }
 
                     if (result.length() > 0) {
@@ -164,16 +176,32 @@ public class NetworkUtil {
         }).start();
     }
 
-    public static boolean getNotifications(List<NotificationItem> items){
+    class Item {
+        String PackageName;
+        String Title;
+        String Content;
+        Long Time;
+    }
+
+    public static void getNotifications(){
         for (ConfigItem cfg:ConfigsManager.configList) {
             if (cfg.isRun > 0 && cfg.mode.equals(WorkingMode.Receiver)) {
-                //TODO 给配置增加时间属性，记录上次更新时间
                 sendGETRequest(cfg.address, cfg.ports,
-                        cfg.uuid, System.currentTimeMillis() / 1000, new HttpCallbackListener() {
+                        cfg.uuid, cfg.lastUpdate.longValue(), new HttpCallbackListener() {
                     @Override
                     public void onFinish(String response) {
                         //TODO 解析JSONOBJ
                         Log.d(TAG, "onFinish: " + response);
+                        Gson gson = new Gson();
+                        List<Item> notificationItemList= gson.fromJson(response,
+                                new TypeToken<List<Item>>(){}.getType());
+                        for(Item item : notificationItemList){
+                            Log.d(TAG, "onFinish: GotNotification: Time:" + item.Time);
+                            Log.d(TAG, "onFinish: GotNotification: packageName:" + item.PackageName);
+                            Log.d(TAG, "onFinish: GotNotification: title:" + item.Title);
+                            Log.d(TAG, "onFinish: GotNotification: content:" + item.Content);
+                            FetchNotiService.postNotification(item.Title, item.Content);
+                        }
                     }
 
                     @Override
@@ -183,6 +211,5 @@ public class NetworkUtil {
                 });
             }
         }
-        return true;
     }
 }
