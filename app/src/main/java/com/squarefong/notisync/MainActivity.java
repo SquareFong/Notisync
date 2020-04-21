@@ -59,40 +59,41 @@ public class MainActivity extends AppCompatActivity {
         startService(i);
 
 
-        //TODO test 测试JSON用，记得注释掉
-        try {
-            JSONObject ojb = NetworkUtil.notificationToJson(
-                    "7517e18a-40a6-4902-a7c9-23bd0ef7f00f",
-                    new NotificationItem("com.v2ray.ang",
-                            "ggc-hk",
-                            "这是一条测试信息abc"));
-            NetworkUtil.sendPOSTRequest("192.168.50.151", 9090, ojb, new HttpCallbackListener() {
-                @Override
-                public void onFinish(String response) {
-                    Log.d(TAG, "onFinish: " + response);
-                }
-
-                @Override
-                public void onError(Exception e) {
-
-                }
-            });
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+//        //test 测试发送JSON用，记得注释掉
+//        try {
+//            JSONObject ojb = NetworkUtil.notificationToJson(
+//                    "7517e18a-40a6-4902-a7c9-23bd0ef7f00f",
+//                    new NotificationItem("com.v2ray.ang",
+//                            "ggc-hk",
+//                            "这是一条测试信息abc"));
+//            NetworkUtil.sendPOSTRequest("192.168.50.151", 9090, ojb, new HttpCallbackListener() {
+//                @Override
+//                public void onFinish(String response) {
+//                    Log.d(TAG, "onFinish: " + response);
+//                }
+//
+//                @Override
+//                public void onError(Exception e) {
+//
+//                }
+//            });
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
     }
 
     private void initConfigs() {
         configList = configsManager.getConfigList();
-        //TODO 测试用 最后删掉
-        if (configList.size() == 0 ){
-            ConfigItem item = new ConfigItem(
-                    -1, 1,
-                    "Untitled Configuration",
-                    "192.168.50.151", 9090,"000-000",
-                    WorkingMode.Sender.getCode(),0);
-            configsManager.insert(item);
-        }
+//        // 测试用 最后删掉
+//        if (configList.size() == 0 ){
+//            ConfigItem item = new ConfigItem(
+//                    -1, 1,
+//                    "Untitled Configuration",
+//                    "192.168.50.151", 9090,"000-000",
+//                    WorkingMode.Sender.getCode(),0);
+//            configsManager.insert(item);
+//        }
+        //TODO 将configsManager的初始化判断改为使用Shared preference
     }
 
     @Override

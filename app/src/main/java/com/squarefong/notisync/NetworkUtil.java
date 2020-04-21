@@ -193,7 +193,6 @@ public class NetworkUtil {
                         cfg.uuid, cfg.lastUpdate.longValue(), new HttpCallbackListener() {
                     @Override
                     public void onFinish(String response) {
-                        //TODO 更新最新通知时间
                         Log.d(TAG, "onFinish: " + response);
                         Gson gson = new Gson();
                         List<Item> notificationItemList= gson.fromJson(response,
