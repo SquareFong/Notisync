@@ -58,28 +58,6 @@ public class MainActivity extends AppCompatActivity {
         Intent i = new Intent(this, FetchNotiService.class);
         startService(i);
 
-
-//        //test 测试发送JSON用，记得注释掉
-//        try {
-//            JSONObject ojb = NetworkUtil.notificationToJson(
-//                    "7517e18a-40a6-4902-a7c9-23bd0ef7f00f",
-//                    new NotificationItem("com.v2ray.ang",
-//                            "ggc-hk",
-//                            "这是一条测试信息abc"));
-//            NetworkUtil.sendPOSTRequest("192.168.50.151", 9090, ojb, new HttpCallbackListener() {
-//                @Override
-//                public void onFinish(String response) {
-//                    Log.d(TAG, "onFinish: " + response);
-//                }
-//
-//                @Override
-//                public void onError(Exception e) {
-//
-//                }
-//            });
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
     }
 
     private void initConfigs() {

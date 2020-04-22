@@ -58,8 +58,6 @@ public class NetworkUtil {
                     conn.setRequestProperty("Charset", "UTF-8");
                     conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
                     conn.setRequestProperty("accept", "application/json");
-//                    conn.setReadTimeout(8000);
-//                    conn.setConnectTimeout(8000);
                     if (json != null){
                         byte[] writeBytes = json.toString().getBytes();
                         conn.setRequestProperty("Content-Length", String.valueOf(writeBytes.length));

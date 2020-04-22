@@ -10,10 +10,6 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Timer;
-
 import static android.content.ContentValues.TAG;
 
 public class FetchNotiService extends Service {
@@ -41,8 +37,8 @@ public class FetchNotiService extends Service {
     }
 
     private Handler handler;
-    private int delay = 1000*3;//周期时间
-    private int launchDelay = 5000;// 这是8小时的毫秒数 为了少消耗流量和电量，8小时自动更新一次
+    private int delay = 1000*3;
+    private int launchDelay = 5000;
 
     @Override
     public void onCreate() {
@@ -56,13 +52,10 @@ public class FetchNotiService extends Service {
         context = getApplicationContext();
 
         handler = new Handler();
-        // handler自带方法实现定时器
-        //每隔3s执行
         Runnable runnable = new Runnable() {
 
             @Override
             public void run() {
-                // handler自带方法实现定时器
                 Log.d(TAG, "run: ##############33333333333333333333################");
 
                 for (ConfigItem cfg : ConfigsManager.configList) {
@@ -74,6 +67,6 @@ public class FetchNotiService extends Service {
                 handler.postDelayed(this, delay);//每隔3s执行
             }
         };
-        handler.postDelayed(runnable, launchDelay);//延时多长时间启动定时器
+        handler.postDelayed(runnable, launchDelay);//延时启动定时器
     }
 }

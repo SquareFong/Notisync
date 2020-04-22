@@ -24,7 +24,6 @@ class ConfigsHelper extends SQLiteOpenHelper {
     }
     @Override
     public void onCreate(SQLiteDatabase db) {
-        //db = getWritableDatabase();
         String CREATE_TABLE = "create table if not exists " +
                 TABLE_NAME +
                 " (" + "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
