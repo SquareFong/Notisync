@@ -56,8 +56,6 @@ public class FetchNotiService extends Service {
 
             @Override
             public void run() {
-                Log.d(TAG, "run: ##############33333333333333333333################");
-
                 for (ConfigItem cfg : ConfigsManager.configList) {
                     if (cfg.isRun > 0 && cfg.mode.equals(WorkingMode.Receiver)) {
                         NetworkUtil.getNotifications();

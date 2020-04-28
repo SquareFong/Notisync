@@ -63,7 +63,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void initConfigs() {
         configList = configsManager.getConfigList();
-        //TODO 将configsManager的初始化判断改为使用Shared preference
         SharedPreferences settings = getSharedPreferences("Initialize", 0);
         if (!settings.getBoolean("initialized", false)) {
             SharedPreferences.Editor editor = settings.edit();
