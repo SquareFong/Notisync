@@ -53,7 +53,7 @@ public class MessagesTool {
             String type = cur.getString(typ);
             allMessages.add(new MessageItem(number, name, body, date,type));
         }
-
+        cur.close();
         return allMessages;
     }
 
