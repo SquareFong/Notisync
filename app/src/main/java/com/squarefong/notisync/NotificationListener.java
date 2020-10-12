@@ -21,6 +21,7 @@ public class NotificationListener extends NotificationListenerService {
     }
 
     //当有新通知
+    //TODO 添加短信识别，当接收端是电脑且该通知来自短信，那么有不一样的操作
     public void onNotificationPosted(StatusBarNotification sbn) {
         Log.d(TAG,"#####Enter onNotificationPosted#####");
         Notification notification = sbn.getNotification();
