@@ -93,6 +93,7 @@ public class MessagesTool {
     }
 }
 
+//1表示接收，2表示发送
 class MessageItem {
     String number;
     String name;
