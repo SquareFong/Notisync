@@ -1,6 +1,7 @@
 package com.squarefong.notisync;
 
 import android.content.Context;
+import android.os.SystemClock;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -17,16 +18,82 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
+import java.util.Vector;
 
 import static android.content.ContentValues.TAG;
 
 public class NetworkUtil {
     public static Context context;
 
-    public static JSONObject notificationToJson(String uuid, NotificationItem n) throws JSONException {
+    private static JSONObject messageToJson(String uuid, MessageItem item) throws JSONException {
+        JSONObject json = new JSONObject();
+        json.put("UUID", uuid);
+        json.put("Time", String.valueOf(System.currentTimeMillis()));
+        json.put("Type","Message");
+
+        JSONObject data = new JSONObject();
+        data.put("Number", item.number);
+        data.put("Name", item.name);
+        data.put("Body", item.body);
+        data.put("Date", item.date);
+        data.put("Type", item.type);
+
+        Log.d(TAG, "messageToJson: " + data.toString());
+        json.put("Data", StrTool.toBase64(data.toString()));
+        return  json;
+    }
+
+    private static JSONObject allMessagesToJson(String uuid, Vector<MessageItem> n) throws JSONException {
+        JSONObject json = new JSONObject();
+        json.put("UUID", uuid);
+        json.put("Time", String.valueOf(System.currentTimeMillis()));
+        json.put("Type","Message");
+
+
+        JSONArray array =new JSONArray();
+
+        for (MessageItem item:
+                n) {
+            JSONObject data = new JSONObject();
+            data.put("Number", item.number);
+            data.put("Name", item.name);
+            data.put("Body", item.body);
+            data.put("Date", item.date);
+            data.put("Type", item.type);
+            array.put(data);
+        }
+
+        Log.d(TAG, "allMessagesToJson: " + array.toString());
+        json.put("Data", StrTool.toBase64(array.toString()));
+        return  json;
+    }
+
+    private static JSONObject phoneDetailsToJson(String uuid, DetailItem item) throws JSONException {
+        JSONObject json = new JSONObject();
+        json.put("UUID", uuid);
+        json.put("Time", String.valueOf(System.currentTimeMillis()));
+        json.put("Type","Detail");
+
+        JSONObject data = new JSONObject();
+        data.put("OsVersion", String.valueOf(System.currentTimeMillis()));
+        data.put("Model", item.Model);
+        data.put("Kernel", item.Kernel);
+        data.put("Uptime", item.Uptime);
+        data.put("Processor", item.Processor);
+        data.put("MemoryUsage", item.MemoryUsage);
+        data.put("StorageUsage", item.StorageUsage);
+
+        Log.d(TAG, "phoneDetailsToJson: " + data.toString());
+        json.put("Data", StrTool.toBase64(data.toString()));
+        return  json;
+    }
+
+    private static JSONObject notificationToJson(String uuid, NotificationItem n) throws JSONException {
         JSONObject json = new JSONObject();
         json.put("UUID", uuid);
         json.put("Time", n.time.toString());
+        json.put("Type","Notification");
+
         JSONObject data = new JSONObject();
         data.put("Time", n.time.toString());
         data.put("PackageName", n.packageName);
@@ -34,17 +101,42 @@ public class NetworkUtil {
         data.put("Content", n.content);
         JSONArray array =new JSONArray();
         array.put(data);
-        json.put("Data", array);
+        Log.d(TAG, "notificationToJson: " + array.toString());
+        json.put("Data", StrTool.toBase64(array.toString()));
         return  json;
     }
 
-    public static void sendPOSTRequest(final String address, final int ports,
+    private static JSONObject allNotificationToJson(String uuid, List<NotificationItem> n) throws JSONException {
+        JSONObject json = new JSONObject();
+        json.put("UUID", uuid);
+        json.put("Time", String.valueOf(System.currentTimeMillis()));
+        json.put("Type","Notification");
+
+
+        JSONArray array =new JSONArray();
+
+        for (NotificationItem item:
+             n) {
+            JSONObject data = new JSONObject();
+            data.put("Time", item.time.toString());
+            data.put("PackageName", item.packageName);
+            data.put("Title", item.title);
+            data.put("Content", item.content);
+            array.put(data);
+        }
+
+        Log.d(TAG, "allNotificationToJson: " + array.toString());
+        json.put("Data", StrTool.toBase64(array.toString()));
+        return  json;
+    }
+
+    private static void sendPOSTRequest(final String address, final int ports,
                                        final JSONObject json, final HttpCallbackListener listener) {
         //新线程
         new Thread(new Runnable() {
             @Override
             public void run() {
-                HttpURLConnection conn=null;
+                HttpURLConnection conn = null;
                 try {
 
                     URL url = new URL("http",address,ports,"send");
@@ -125,7 +217,7 @@ public class NetworkUtil {
         }).start();
     }
 
-    public static void sendGETRequest(final String address, final int ports,
+    private static void sendGETRequest(final String address, final int ports,
                                       final String uuid, final Long time, final HttpCallbackListener listener) {
         //新线程
         new Thread(new Runnable() {
@@ -177,6 +269,7 @@ public class NetworkUtil {
         }).start();
     }
 
+    // 通知项结构体
     class Item {
         String PackageName;
         String Title;
