@@ -35,6 +35,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //索要短信权限
+        MessagesTool.checkPermission(this);
+
         //初始化主界面 和 recyclerView
         initConfigs();
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);

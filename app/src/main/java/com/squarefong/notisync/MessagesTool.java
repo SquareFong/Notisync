@@ -77,7 +77,6 @@ public class MessagesTool {
         }
         // 如果这3个权限全都拥有, 则直接执行读取短信代码
         if (isAllGranted) {
-            return;
         } else {
 
             int MY_PERMISSION_REQUEST_CODE = 1000;
