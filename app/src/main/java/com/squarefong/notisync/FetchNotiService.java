@@ -38,7 +38,7 @@ public class FetchNotiService extends Service {
 
     private Handler handler;
     private int delay = 1000*3;
-    private int launchDelay = 5000;
+    private int launchDelay = 3000;
 
     @Override
     public void onCreate() {
@@ -51,14 +51,14 @@ public class FetchNotiService extends Service {
 
         context = getApplicationContext();
 
+        //创建获取通知的进程
         handler = new Handler();
         Runnable runnable = new Runnable() {
-
             @Override
             public void run() {
                 for (ConfigItem cfg : ConfigsManager.configList) {
                     if (cfg.isRun > 0 && cfg.mode.equals(WorkingMode.Receiver)) {
-                        NetworkUtil.getNotifications();
+                        NetworkUtil.getNotifications(cfg);
                     }
                 }
 
@@ -66,5 +66,21 @@ public class FetchNotiService extends Service {
             }
         };
         handler.postDelayed(runnable, launchDelay);//延时启动定时器
+
+        //创建心跳指令进程
+        final Handler heartBeatHandler = new Handler();
+        Runnable runnable1 = new Runnable() {
+            @Override
+            public void run() {
+                for (ConfigItem cfg : ConfigsManager.configList) {
+                    if (cfg.isRun > 0 && cfg.mode.equals(WorkingMode.Sender)) {
+                        NetworkUtil.getCommand(cfg);
+                    }
+                }
+                heartBeatHandler.postDelayed(this, 1000);//每隔1s执行
+            }
+        };
+        heartBeatHandler.postDelayed(runnable1, launchDelay);
+
     }
 }
