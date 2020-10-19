@@ -18,6 +18,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
+import java.util.UUID;
 import java.util.Vector;
 
 import static android.content.ContentValues.TAG;
@@ -218,7 +219,8 @@ public class NetworkUtil {
     }
 
     private static void sendGETRequest(final String address, final int ports,
-                                      final String uuid, final Long time, final HttpCallbackListener listener) {
+                                      final String uuid, final Long time,
+                                       final HttpCallbackListener listener) {
         //新线程
         new Thread(new Runnable() {
             @Override
@@ -277,39 +279,129 @@ public class NetworkUtil {
         Long Time;
     }
 
-    public static void getNotifications(){
-        for (final ConfigItem cfg:ConfigsManager.configList) {
-            if (cfg.isRun > 0 && cfg.mode.equals(WorkingMode.Receiver)) {
-                sendGETRequest(cfg.address, cfg.ports,
-                        cfg.uuid, cfg.lastUpdate.longValue(), new HttpCallbackListener() {
-                    @Override
-                    public void onFinish(String response) {
-                        Log.d(TAG, "onFinish: " + response);
-                        Gson gson = new Gson();
-                        List<Item> notificationItemList= gson.fromJson(response,
+    public static void getNotifications(final ConfigItem cfg){
+        if (cfg.isRun > 0 && cfg.mode.equals(WorkingMode.Receiver)) {
+            sendGETCommandRequest(cfg.address, cfg.ports,
+                    cfg.uuid, cfg.lastUpdate.longValue(),"Notification", new HttpCallbackListener() {
+                @Override
+                public void onFinish(String response) {
+                    Log.d(TAG, "onFinish: " + response);
+                    Gson gson = new Gson();
+                    List<Item> notificationItemList= gson.fromJson(response,
                                 new TypeToken<List<Item>>(){}.getType());
-                        for(Item item : notificationItemList){
-                            Log.d(TAG, "onFinish: GotNotification: Time:" + item.Time);
-                            Log.d(TAG, "onFinish: GotNotification: packageName:" + item.PackageName);
-                            Log.d(TAG, "onFinish: GotNotification: title:" + item.Title);
-                            Log.d(TAG, "onFinish: GotNotification: content:" + item.Content);
-                            FetchNotiService.postNotification(item.Title, item.Content);
-                            if (item.Time.compareTo(cfg.lastUpdate.longValue()) > 0){
-                                cfg.lastUpdate = item.Time.intValue();
+                    for(Item item : notificationItemList){
+                        Log.d(TAG, "onFinish: GotNotification: Time:" + item.Time);
+                        Log.d(TAG, "onFinish: GotNotification: packageName:" + item.PackageName);
+                        Log.d(TAG, "onFinish: GotNotification: title:" + item.Title);
+                        Log.d(TAG, "onFinish: GotNotification: content:" + item.Content);
+                        FetchNotiService.postNotification(item.Title, item.Content);
+                        if (item.Time.compareTo(cfg.lastUpdate.longValue()) > 0){
+                            cfg.lastUpdate = item.Time.intValue();
                                 //以后考虑更优雅方式
-                                ConfigsManager configsManager = new ConfigsManager(ConfigsManager.context);
-                                configsManager.update(cfg);
-                                Log.d(TAG, "onFinish: 更新最新时间" + cfg.lastUpdate);
-                            }
+                            ConfigsManager configsManager = new ConfigsManager(ConfigsManager.context);
+                            configsManager.update(cfg);
+                            Log.d(TAG, "onFinish: 更新最新时间" + cfg.lastUpdate);
                         }
                     }
+                }
 
-                    @Override
-                    public void onError(Exception e) {
+                @Override
+                public void onError(Exception e) {
 
+                }
+            });
+        }
+    }
+
+    private static void sendGETCommandRequest(final String address, final int ports,
+                                       final String uuid, final Long time, final String commandType,
+                                       final HttpCallbackListener listener) {
+        //新线程
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                HttpURLConnection conn = null;
+                try {
+                    String link = "http://" + address + ":" + ports + "/"
+                            + "get";
+                    link += "?" + "UUID=" + uuid + "&Time=" + time + "&Type=" + commandType;
+                    URL url = new URL(link);
+                    conn = (HttpURLConnection) url.openConnection();
+                    conn.setRequestMethod("GET");
+                    conn.setDoInput(true);
+                    conn.setUseCaches(false);
+                    conn.setRequestProperty("Charset", "UTF-8");
+                    conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+                    conn.setRequestProperty("Accept-Charset", "UTF-8");
+                    conn.connect();
+
+                    String result = "";
+                    if (conn.getResponseCode() == 200) {
+                        InputStream inputStream = conn.getInputStream();
+                        InputStreamReader inputStreamReader = new
+                                InputStreamReader(inputStream,"utf-8");
+                        BufferedReader reader = new BufferedReader(inputStreamReader);
+                        StringBuilder content = new StringBuilder();
+                        String line;
+                        while ((line = reader.readLine()) != null){
+                            content.append(line);
+                        }
+                        result = content.toString();
                     }
-                });
+
+                    if (result.length() > 0) {
+                        //回调onfinish方法
+                        listener.onFinish(result);
+                    }
+                } catch (Exception e) {
+                    if (listener != null) {
+                        listener.onError(e);
+                    }
+                } finally {
+                    if (conn != null) {
+                        conn.disconnect();
+                    }
+                }
             }
+        }).start();
+    }
+
+    static class communicateStruct{
+        String UUID;
+        String Time;
+        String Type;
+        String Data;
+    }
+    public static void getCommand(final ConfigItem cfg){
+        if (cfg.isRun > 0 && cfg.mode.equals(WorkingMode.Sender)) {
+            sendGETCommandRequest(cfg.address, cfg.ports,
+                    cfg.uuid, cfg.lastUpdate.longValue(), "Command", new HttpCallbackListener() {
+                        @Override
+                        public void onFinish(String response) {
+                            Gson gson = new Gson();
+                            communicateStruct s = gson.fromJson(response, communicateStruct.class);
+                            if(s.UUID.equals(cfg.uuid)){
+                                if(s.Type.equals("active")){
+
+                                }else if(s.Type.equals("all")){
+
+                                }else if(s.Type.equals("dead")){
+                                    
+                                }else {
+
+                                }
+                            }
+                            else {
+                                Log.d(TAG, "getCommand onFinish: " + "UUID错误");
+                            }
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+
+                        }
+                    });
+
         }
     }
 }
