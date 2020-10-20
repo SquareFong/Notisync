@@ -69,7 +69,8 @@ public class MessagesTool {
                 Manifest.permission.RECEIVE_SMS
         };
         for (String permission : permissions) {
-            if (ContextCompat.checkSelfPermission(parent, permission) != PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(parent, permission)
+                    != PackageManager.PERMISSION_GRANTED) {
                 // 只要有一个权限没有被授予, 则直接返回 false
                 isAllGranted = false;
                 break;
@@ -95,17 +96,17 @@ public class MessagesTool {
 
 //1表示接收，2表示发送
 class MessageItem {
-    String number;
-    String name;
-    String body;
-    String date;
-    String type;
+    String Number;
+    String Name;
+    String Body;
+    String Date;
+    String Type;
     public MessageItem(String Number, String Name, String Body, String Date, String Type){
-        number = Number;
-        name = Name;
-        body = Body;
-        date = Date;
-        type = Type;
+        this.Number = Number;
+        this.Name = Name;
+        this.Body = Body;
+        this.Date = Date;
+        this.Type = Type;
     }
 
     public MessageItem() {

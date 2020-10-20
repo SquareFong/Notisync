@@ -1,7 +1,6 @@
 package com.squarefong.notisync;
 
 import android.content.Context;
-import android.os.SystemClock;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -18,7 +17,6 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
-import java.util.UUID;
 import java.util.Vector;
 
 import static android.content.ContentValues.TAG;
@@ -33,11 +31,11 @@ public class NetworkUtil {
         json.put("Type","Message");
 
         JSONObject data = new JSONObject();
-        data.put("Number", item.number);
-        data.put("Name", item.name);
-        data.put("Body", item.body);
-        data.put("Date", item.date);
-        data.put("Type", item.type);
+        data.put("Number", item.Number);
+        data.put("Name", item.Name);
+        data.put("Body", item.Body);
+        data.put("Date", item.Date);
+        data.put("Type", item.Type);
 
         Log.d(TAG, "messageToJson: " + data.toString());
         json.put("Data", StrTool.toBase64(data.toString()));
@@ -56,11 +54,11 @@ public class NetworkUtil {
         for (MessageItem item:
                 n) {
             JSONObject data = new JSONObject();
-            data.put("Number", item.number);
-            data.put("Name", item.name);
-            data.put("Body", item.body);
-            data.put("Date", item.date);
-            data.put("Type", item.type);
+            data.put("Number", item.Number);
+            data.put("Name", item.Name);
+            data.put("Body", item.Body);
+            data.put("Date", item.Date);
+            data.put("Type", item.Type);
             array.put(data);
         }
 
@@ -381,14 +379,101 @@ public class NetworkUtil {
                             Gson gson = new Gson();
                             communicateStruct s = gson.fromJson(response, communicateStruct.class);
                             if(s.UUID.equals(cfg.uuid)){
-                                if(s.Type.equals("active")){
+                                switch (s.Type) {
+                                    case "active": {
+                                        //修改ShortMessageReceiver的变量使其自动发送新短信
+                                        if (!ShortMessageReceiver.active)
+                                            ShortMessageReceiver.active = true;
+                                        //与此同时，主动汇报手机detail
+                                        DetailItem detailItem = PhoneDetails.getPhoneDetails();
+                                        JSONObject ojb = null;
+                                        try {
+                                            ojb = NetworkUtil.phoneDetailsToJson(cfg.uuid, detailItem);
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+                                        NetworkUtil.sendPOSTRequest(cfg.address,
+                                                cfg.ports,
+                                                ojb,
+                                                new HttpCallbackListener() {
+                                                    @Override
+                                                    public void onFinish(String response) {
+                                                        Log.d(TAG, "NetworkUtil:sendPhoneDetails: onFinish: " + response);
+                                                    }
 
-                                }else if(s.Type.equals("all")){
+                                                    @Override
+                                                    public void onError(Exception e) {
 
-                                }else if(s.Type.equals("dead")){
-                                    
-                                }else {
+                                                    }
+                                                });
+                                        break;
+                                    }
+                                    case "all": {
+                                        //主动上传所有短信
+                                        Vector<MessageItem> allMessages = MessagesTool.getAllMessages(context);
+                                        JSONObject object = null;
+                                        try {
+                                            object = NetworkUtil.allMessagesToJson(cfg.uuid, allMessages);
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+                                        NetworkUtil.sendPOSTRequest(cfg.address,
+                                                cfg.ports,
+                                                object,
+                                                new HttpCallbackListener() {
+                                                    @Override
+                                                    public void onFinish(String response) {
+                                                        Log.d(TAG, "NetworkUtil:sendAllMessages: onFinish: " + response);
+                                                    }
 
+                                                    @Override
+                                                    public void onError(Exception e) {
+
+                                                    }
+                                                });
+
+                                        //修改ShortMessageReceiver的变量使其自动发送新短信
+                                        if (!ShortMessageReceiver.active)
+                                            ShortMessageReceiver.active = true;
+                                        //与此同时，主动汇报手机detail
+                                        DetailItem detailItem = PhoneDetails.getPhoneDetails();
+                                        JSONObject ojb = null;
+                                        try {
+                                            ojb = NetworkUtil.phoneDetailsToJson(cfg.uuid, detailItem);
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+                                        NetworkUtil.sendPOSTRequest(cfg.address,
+                                                cfg.ports,
+                                                ojb,
+                                                new HttpCallbackListener() {
+                                                    @Override
+                                                    public void onFinish(String response) {
+                                                        Log.d(TAG, "NetworkUtil:sendPhoneDetails: onFinish: " + response);
+                                                    }
+
+                                                    @Override
+                                                    public void onError(Exception e) {
+
+                                                    }
+                                                });
+                                        break;
+                                    }
+                                    case "dead": {
+                                        //修改ShortMessageReceiver的变量使其 不要 自动发送新短信
+                                        if (ShortMessageReceiver.active)
+                                            ShortMessageReceiver.active = false;
+                                        break;
+                                    }
+                                    case "newSMS": {
+                                        String data = StrTool.fromBase64(s.Data);
+                                        MessageItem item = gson.fromJson(data, MessageItem.class);
+                                        MessagesTool.sendMessage(item.Number, item.Body);
+                                        break;
+                                    }
+                                    default:
+                                        Log.d(TAG, "getCommand onFinish: command type error");
+                                        break;
                                 }
                             }
                             else {

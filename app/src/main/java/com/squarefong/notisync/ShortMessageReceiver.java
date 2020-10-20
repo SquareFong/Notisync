@@ -13,7 +13,7 @@ import static android.content.ContentValues.TAG;
 
 public class ShortMessageReceiver extends BroadcastReceiver {
     private static final String SMS_RECEIVED_ACTION = "android.provider.Telephony.SMS_RECEIVED";
-
+    public static boolean active = false;
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
@@ -30,18 +30,19 @@ public class ShortMessageReceiver extends BroadcastReceiver {
                     String format = bundle.getString("format");
                     Vector<MessageItem> messageItems = new Vector<>();
                     for (Object pdusObj : pdusData){
-                        SmsMessage sms = SmsMessage.createFromPdu((byte[])pdusObj, format);MessageItem item = new MessageItem();
-                        item.body = sms.getMessageBody();
-                        item.number = sms.getOriginatingAddress();
-                        item.type = String.valueOf(1);
-                        item.date = String.valueOf(System.currentTimeMillis());
+                        SmsMessage sms = SmsMessage.createFromPdu((byte[])pdusObj, format);
+                        MessageItem item = new MessageItem();
+                        item.Body = sms.getMessageBody();
+                        item.Number = sms.getOriginatingAddress();
+                        item.Type = String.valueOf(1);
+                        item.Date = String.valueOf(System.currentTimeMillis());
                         messageItems.add(item);
 
-                        Log.d(TAG, "onReceive: " + "Number: " + item.number);
-                        Log.d(TAG, "onReceive: " + "Name: " + item.name);
-                        Log.d(TAG, "onReceive: " + "Body: " + item.body);
-                        Log.d(TAG, "onReceive: " + "Date: " + item.date);
-                        Log.d(TAG, "onReceive: " + "Type: " + item.type);
+                        Log.d(TAG, "onReceive: " + "Number: " + item.Number);
+                        Log.d(TAG, "onReceive: " + "Name: " + item.Name);
+                        Log.d(TAG, "onReceive: " + "Body: " + item.Body);
+                        Log.d(TAG, "onReceive: " + "Date: " + item.Date);
+                        Log.d(TAG, "onReceive: " + "Type: " + item.Type);
                     }
                 }
             }
