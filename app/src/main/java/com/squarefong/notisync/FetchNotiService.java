@@ -51,7 +51,7 @@ public class FetchNotiService extends Service {
 
         context = getApplicationContext();
 
-        //创建获取通知的进程
+        //创建获取通知的线程
         handler = new Handler();
         Runnable runnable = new Runnable() {
             @Override
@@ -67,7 +67,7 @@ public class FetchNotiService extends Service {
         };
         handler.postDelayed(runnable, launchDelay);//延时启动定时器
 
-        //创建心跳指令进程
+        //创建心跳指令线程
         final Handler heartBeatHandler = new Handler();
         Runnable runnable1 = new Runnable() {
             @Override
