@@ -91,7 +91,7 @@ public class NetworkUtil {
         JSONObject json = new JSONObject();
         json.put("UUID", uuid);
         json.put("Time", n.time.toString());
-        json.put("Type","Notification");
+        json.put("Type","Notifications");
 
         JSONObject data = new JSONObject();
         data.put("Time", n.time.toString());

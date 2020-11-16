@@ -93,7 +93,7 @@ public class PhoneDetails {
     static String uptime(){
         long elapsedRealtime = SystemClock.elapsedRealtime();
         String sysUptime = String.format(Locale.getDefault(),
-                "%d day(s), %d hour(s)",
+                "%d day(s) %d hour(s)",
                 TimeUnit.MILLISECONDS.toDays(elapsedRealtime),
                 TimeUnit.MILLISECONDS.toHours(elapsedRealtime));
         return sysUptime;
