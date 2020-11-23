@@ -1,5 +1,6 @@
 package com.squarefong.notisync;
 
+import android.app.Notification;
 import android.content.Context;
 import android.util.Log;
 
@@ -46,7 +47,7 @@ public class NetworkUtil {
         JSONObject json = new JSONObject();
         json.put("UUID", uuid);
         json.put("Time", String.valueOf(System.currentTimeMillis()));
-        json.put("Type","Message");
+        json.put("Type","Messages");
 
 
         JSONArray array =new JSONArray();
@@ -74,7 +75,7 @@ public class NetworkUtil {
         json.put("Type","Detail");
 
         JSONObject data = new JSONObject();
-        data.put("OsVersion", String.valueOf(System.currentTimeMillis()));
+        data.put("OsVersion", item.OsVersion);
         data.put("Model", item.Model);
         data.put("Kernel", item.Kernel);
         data.put("Uptime", item.Uptime);
@@ -292,7 +293,14 @@ public class NetworkUtil {
                         Log.d(TAG, "onFinish: GotNotification: packageName:" + item.PackageName);
                         Log.d(TAG, "onFinish: GotNotification: title:" + item.Title);
                         Log.d(TAG, "onFinish: GotNotification: content:" + item.Content);
-                        FetchNotiService.postNotification(item.Title, item.Content);
+
+                        Notification notification = new Notification.Builder(context, FetchNotiService.channelID)
+                                .setContentTitle(item.Title)
+                                .setContentText(item.Content)
+                                .setSmallIcon(android.R.drawable.stat_notify_more)
+                                .setAutoCancel(true).build();
+                        FetchNotiService.postNotification(notification);
+
                         if (item.Time.compareTo(cfg.lastUpdate.longValue()) > 0){
                             cfg.lastUpdate = item.Time.intValue();
                                 //以后考虑更优雅方式
@@ -370,7 +378,7 @@ public class NetworkUtil {
         String Type;
         String Data;
     }
-    public static void getCommand(final ConfigItem cfg){
+    public static void getCommand(final ConfigItem cfg, final Context context){
         if (cfg.isRun > 0 && cfg.mode.equals(WorkingMode.Sender)) {
             sendGETCommandRequest(cfg.address, cfg.ports,
                     cfg.uuid, cfg.lastUpdate.longValue(), "Command", new HttpCallbackListener() {
@@ -428,7 +436,7 @@ public class NetworkUtil {
 
                                                     @Override
                                                     public void onError(Exception e) {
-
+                                                        Log.e(TAG, "NetworkUtil:sendAllMessages: onError: " + e.getMessage());
                                                     }
                                                 });
 
@@ -467,8 +475,10 @@ public class NetworkUtil {
                                     }
                                     case "newSMS": {
                                         String data = StrTool.fromBase64(s.Data);
-                                        MessageItem item = gson.fromJson(data, MessageItem.class);
-                                        MessagesTool.sendMessage(item.Number, item.Body);
+                                        List<MessageItem> messageItems = gson.fromJson(data, new TypeToken<List<MessageItem>>(){}.getType());
+                                        for (MessageItem item: messageItems) {
+                                            MessagesTool.sendMessage(item.Number, item.Body);
+                                        }
                                         break;
                                     }
                                     default:
@@ -483,7 +493,7 @@ public class NetworkUtil {
 
                         @Override
                         public void onError(Exception e) {
-
+                            Log.e(TAG, "NetworkUtil:getCommand: onError: " + e.getMessage());
                         }
                     });
 

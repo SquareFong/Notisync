@@ -21,12 +21,12 @@ public class FetchNotiService extends Service {
     public FetchNotiService() {
     }
 
-    static void postNotification(String title, String content){
-        Notification notification = new Notification.Builder(context, channelID)
-                .setContentTitle(title)
-                .setContentText(content)
-                .setSmallIcon(android.R.drawable.stat_notify_more)
-                .setAutoCancel(true).build();
+    static void postNotification(Notification notification){
+//        Notification notification = new Notification.Builder(context, channelID)
+//                .setContentTitle(title)
+//                .setContentText(content)
+//                .setSmallIcon(android.R.drawable.stat_notify_more)
+//                .setAutoCancel(true).build();
         manager.notify(++id, notification);
     }
 
@@ -74,7 +74,7 @@ public class FetchNotiService extends Service {
             public void run() {
                 for (ConfigItem cfg : ConfigsManager.configList) {
                     if (cfg.isRun > 0 && cfg.mode.equals(WorkingMode.Sender)) {
-                        NetworkUtil.getCommand(cfg);
+                        NetworkUtil.getCommand(cfg, getApplicationContext());
                     }
                 }
                 heartBeatHandler.postDelayed(this, 1000);//每隔1s执行
