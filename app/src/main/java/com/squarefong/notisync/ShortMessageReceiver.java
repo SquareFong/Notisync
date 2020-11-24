@@ -44,7 +44,7 @@ public class ShortMessageReceiver extends BroadcastReceiver {
                         Log.d(TAG, "onReceive: " + "Date: " + item.Date);
                         Log.d(TAG, "onReceive: " + "Type: " + item.Type);
                     }
-                    //TODO : do something like post request
+                    NetworkUtil.sendMessages(messageItems);
                 }
             }
         }
