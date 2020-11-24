@@ -43,7 +43,7 @@ public class NetworkUtil {
         return  json;
     }
 
-    private static JSONObject allMessagesToJson(String uuid, Vector<MessageItem> n) throws JSONException {
+    private static JSONObject messagesToJson(String uuid, Vector<MessageItem> n) throws JSONException {
         JSONObject json = new JSONObject();
         json.put("UUID", uuid);
         json.put("Time", String.valueOf(System.currentTimeMillis()));
@@ -211,6 +211,40 @@ public class NetworkUtil {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
+                    }
+                }
+            }
+        }).start();
+    }
+
+    public static void sendMessages(final Vector<MessageItem> messageItems){
+        //遍历配置列表，选择所有发送的配置执行
+        new Thread(new Runnable(){
+            @Override
+            public void run() {
+
+                for (ConfigItem cfg:ConfigsManager.configList) {
+                    if (cfg.isRun > 0 && cfg.mode.equals(WorkingMode.Sender)) {
+                        JSONObject object = null;
+                        try {
+                            object = NetworkUtil.messagesToJson(cfg.uuid, messageItems);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        NetworkUtil.sendPOSTRequest(cfg.address,
+                                cfg.ports,
+                                object,
+                                new HttpCallbackListener() {
+                                    @Override
+                                    public void onFinish(String response) {
+                                        Log.d(TAG, "NetworkUtil:sendAllMessages: onFinish: " + response);
+                                    }
+
+                                    @Override
+                                    public void onError(Exception e) {
+                                        Log.e(TAG, "NetworkUtil:sendAllMessages: onError: " + e.getMessage());
+                                    }
+                                });
                     }
                 }
             }
@@ -421,7 +455,7 @@ public class NetworkUtil {
                                         Vector<MessageItem> allMessages = MessagesTool.getAllMessages(context);
                                         JSONObject object = null;
                                         try {
-                                            object = NetworkUtil.allMessagesToJson(cfg.uuid, allMessages);
+                                            object = NetworkUtil.messagesToJson(cfg.uuid, allMessages);
                                         } catch (JSONException e) {
                                             e.printStackTrace();
                                         }
